@@ -59,4 +59,15 @@ class CurrencyValues extends \yii\db\ActiveRecord
     {
         return $this->hasOne(YiiCurrency::className(), ['id' => 'currency_id']);
     }
+    
+    public function addValue($currencyId, $datetime, array $currency)
+    {
+        $model = new CurrencyValues();
+        $model->currency_id = $currencyId;
+        $model->currency_nominal = $currencyArray["Nominal"];
+        $model->currency_value = $currencyArray["Value"];
+        $model->update = $datetime;
+        
+        return $model->save();
+    }
 }
