@@ -63,7 +63,7 @@ class Currency extends \yii\db\ActiveRecord
     public function addCurrency(array $currencyArray)
     {
         $model = new Currency();
-        $model->cbr_id = $currencyArray["cbr_id"];
+        $model->cbr_id = $currencyArray["Id"];
         $model->cbr_numcode = mb_strtolower (trim ($currencyArray["NumCode"]), 'UTF-8');
         $model->cbr_charcode = mb_strtolower (trim ($currencyArray["CharCode"]), 'UTF-8');
         $model->name = mb_strtolower (trim ($currencyArray["Name"]), 'UTF-8');
@@ -86,8 +86,17 @@ class Currency extends \yii\db\ActiveRecord
     
     public function addValues($data)
     {
-        $currencyValue = new CurrencyValues();
-        $currencyValue->addValue($this->id, time(), $data);
+        $id = $currencyModel->id;
+        $date = strtotime($data["Date"]);
+        $valueModel = CurrencyValues::model()->getCurrencyValue($id, $date);
+        
+        if(! $valueModel) {
+            $valueModel = new CurrencyValues();
+            return $valueModel->addValue($this->id, $data);
+        }else {
+           return $valueModel->updateValue($this->id, $data);
+        }
+        return false;
     }
     
     public function updateCurrency(CurrencyStructure $model)
