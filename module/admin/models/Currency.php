@@ -1,8 +1,9 @@
 <?php
 
-namespace app\models;
+namespace app\module\admin\models;
 
 use Yii;
+use app\models\CurrencyValues;
 
 /**
  * This is the model class for table "yii_currency".
@@ -58,4 +59,52 @@ class Currency extends \yii\db\ActiveRecord
     {
         return $this->hasMany(YiiCurrencyValues::className(), ['currency_id' => 'id']);
     }
+    
+    public function addCurrency(array $currencyArray)
+    {
+        $model = new Currency();
+        $model->cbr_id = $currencyArray["cbr_id"];
+        $model->cbr_numcode = mb_strtolower (trim ($currencyArray["NumCode"]), 'UTF-8');
+        $model->cbr_charcode = mb_strtolower (trim ($currencyArray["CharCode"]), 'UTF-8');
+        $model->name = mb_strtolower (trim ($currencyArray["Name"]), 'UTF-8');
+        
+        return $model->save();
+    }
+    
+    public function getCurrencyByNumCode($numCode)
+    {
+        if (empty ($numCode)) {
+            return null;
+        }
+        return Currency::model ()->findByAttributes (array (), array (
+            'condition' => 'LOWER(`cbr_numcode`)=:numcode',
+            'params' => array (
+                ':numcode' => mb_strtolower (trim ($numCode), 'UTF-8')
+            )
+        ));
+    }
+    
+    public function addValues($data)
+    {
+        $currencyValue = new CurrencyValues();
+        $currencyValue->addValue($this->id, time(), $data);
+    }
+    
+    public function updateCurrency(CurrencyStructure $model)
+    {
+       $currencyList = $model->getCurrency();
+       if ($currencyList) {
+           foreach ($currencyList as $data) {
+               $date = time();
+               $currencyModel = $this->getCurrencyByNumCode($data["NumCode"]);
+               if (! $currencyModel) {
+                   $currencyModel = $this->addCurrency($data);
+               }
+               if ($currencyModel) {
+                   $currencyModel->addValues($data);
+               }
+           }
+       }
+    }
+
 }
