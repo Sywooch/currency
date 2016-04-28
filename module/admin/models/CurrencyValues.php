@@ -60,14 +60,42 @@ class CurrencyValues extends \yii\db\ActiveRecord
         return $this->hasOne(YiiCurrency::className(), ['id' => 'currency_id']);
     }
     
-    public function addValue($currencyId, $datetime, array $currency)
+    public function getCurrencyValue($currencyId, $date)
+    {
+        return CurrencyValues::model ()->findByAttributes (array (), array (
+            'condition' => 'currencyId=:currencyId AND update=:date',
+            'params' => array (
+                ':currencyId' => $currencyId, ':date' => $date
+            )
+        ));
+    }
+    
+    public function addValue($currencyId, array $currency)
     {
         $model = new CurrencyValues();
         $model->currency_id = $currencyId;
         $model->currency_nominal = $currencyArray["Nominal"];
         $model->currency_value = $currencyArray["Value"];
-        $model->update = $datetime;
+        $model->update = strtotime($currency["Date"]);
         
         return $model->save();
+    }
+    
+    public function updateValue($currencyId, array $currency)
+    {
+        $changeFlag = false;
+        if ($this->currency_nominal != $currencyArray["Nominal"]) {
+            $this->currency_nominal = $currencyArray["Nominal"];
+            $changeFlag = true;
+        }
+        if ($this->currency_value != $currencyArray["Value"]) {
+            $this->currency_value = $currencyArray["Value"];
+            $changeFlag = true;
+        }
+    
+        if ($changeFlag) {
+            return $this->save();
+        }
+        return true;;
     }
 }
