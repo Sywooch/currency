@@ -1,6 +1,6 @@
 <?php
 
-namespace app\models;
+namespace app\module\admin\models;
 
 use Yii;
 
@@ -62,26 +62,23 @@ class CurrencyValues extends \yii\db\ActiveRecord
     
     public function getCurrencyValue($currencyId, $date)
     {
-        return CurrencyValues::model ()->findByAttributes (array (), array (
-            'condition' => 'currencyId=:currencyId AND update=:date',
-            'params' => array (
-                ':currencyId' => $currencyId, ':date' => $date
-            )
-        ));
+        return CurrencyValues::find()
+        ->where(['currency_id' => $currencyId, 'update' => $date])
+        ->one();
     }
     
-    public function addValue($currencyId, array $currency)
+    public function addValue($currencyId, array $currencyArray)
     {
         $model = new CurrencyValues();
         $model->currency_id = $currencyId;
         $model->currency_nominal = $currencyArray["Nominal"];
         $model->currency_value = $currencyArray["Value"];
-        $model->update = strtotime($currency["Date"]);
+        $model->update = strtotime($currencyArray["Date"]);
         
         return $model->save();
     }
     
-    public function updateValue($currencyId, array $currency)
+    public function updateValue($currencyId, array $currencyArray)
     {
         $changeFlag = false;
         if ($this->currency_nominal != $currencyArray["Nominal"]) {
