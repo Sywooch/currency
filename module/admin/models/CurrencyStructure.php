@@ -35,14 +35,18 @@ class CurrencyStructure extends AbstractStructure
         }
         
         $currencyList = array ();
-
+        $date = (string)$this->xml['Date'];
+        
         for ($i = 0; $i < count ($this->xml->{'Valute'}); $i ++) {
             $currency = $this->xml->{'Valute'}[ $i ];
+
             $currencyVars = array ();
  
             foreach ($fields as $fieldNewName => $fieldVars) {
                 $currencyVars[ $fieldNewName ] = $this->getValue ($currency, $fieldVars);
             }
+            $currencyVars['Date'] = (string)$date;
+            $currencyVars['Id'] = (string)$currency['ID'];
             $currencyList[ ] = $currencyVars;
         }
         return $currencyList;
