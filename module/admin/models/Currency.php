@@ -3,6 +3,7 @@
 namespace app\module\admin\models;
 
 use Yii;
+use yii\data\ActiveDataProvider;
 
 /**
  * This is the model class for table "yii_currency".
@@ -115,6 +116,16 @@ class Currency extends \yii\db\ActiveRecord
                }
            }
        }
+    }
+    
+    public function getDataProvider()
+    {
+        return new ActiveDataProvider([
+        'query' => Currency::find(),
+        'pagination' => [
+            'pageSize' => 20,
+        ],
+    ]);
     }
 
 }
