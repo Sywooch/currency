@@ -3,6 +3,7 @@
 namespace app\module\admin\models;
 
 use Yii;
+use yii\data\ActiveDataProvider;
 
 /**
  * This is the model class for table "yii_currency_values".
@@ -94,5 +95,17 @@ class CurrencyValues extends \yii\db\ActiveRecord
             return $this->save();
         }
         return true;;
+    }
+    
+    public function getDataProvider($currencyId)
+    {
+        return new ActiveDataProvider([
+            'query' => CurrencyValues::find()->
+            where(['currency_id'=>$currencyId])->
+            orderBy('update DESC'),
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+        ]);
     }
 }
