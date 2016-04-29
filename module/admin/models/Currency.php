@@ -3,7 +3,6 @@
 namespace app\module\admin\models;
 
 use Yii;
-use app\models\CurrencyValues;
 
 /**
  * This is the model class for table "yii_currency".
@@ -68,27 +67,29 @@ class Currency extends \yii\db\ActiveRecord
         $model->cbr_charcode = mb_strtolower (trim ($currencyArray["CharCode"]), 'UTF-8');
         $model->name = mb_strtolower (trim ($currencyArray["Name"]), 'UTF-8');
         
-        return $model->save();
+        if ($model->save()) {
+            return $model;
+        }
+        
+        return false;
     }
     
     public function getCurrencyByNumCode($numCode)
     {
         if (empty ($numCode)) {
-            return null;
+            return false;
         }
-        return Currency::model ()->findByAttributes (array (), array (
-            'condition' => 'LOWER(`cbr_numcode`)=:numcode',
-            'params' => array (
-                ':numcode' => mb_strtolower (trim ($numCode), 'UTF-8')
-            )
-        ));
+        return Currency::find()
+        ->where(['cbr_numcode' => mb_strtolower (trim ($numCode), 'UTF-8')])
+        ->one();
     }
     
     public function addValues($data)
     {
-        $id = $currencyModel->id;
+        $id = $this->id;
         $date = strtotime($data["Date"]);
-        $valueModel = CurrencyValues::model()->getCurrencyValue($id, $date);
+        $model =  new CurrencyValues();
+        $valueModel = $model->getCurrencyValue($id, $date);
         
         if(! $valueModel) {
             $valueModel = new CurrencyValues();
