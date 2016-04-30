@@ -21,9 +21,15 @@ class GoodsController extends \yii\web\Controller
     public function loadModel($id)
     {
         $model = Goods::find()->
-        where(['id'=>$id])->one();
+        where([Goods::tableName() . '.id'=>$id])->joinWith('currency')->one();
         if ($model === null)
             throw new CHttpException (404, 'The requested page does not exist.');
         return $model;
+    }
+    
+    public function actionUpdate($id)
+    {
+        $goods = $this->loadModel($id);
+        return $this->render('update', array('goods'=> $goods));
     }
 }

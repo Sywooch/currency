@@ -9,19 +9,27 @@ use Yii;
  *
  * @property string $id
  * @property string $name
- * @property string $price
+ * @property double $price
+ * @property string $price_str
+ * @property int $currency_id
  *
  * @property YiiOrderGoods[] $yiiOrderGoods
  */
 use yii\data\ActiveDataProvider;
 class Goods extends \yii\db\ActiveRecord
 {
+    use MoneyTrait;
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
         return 'yii_goods';
+    }
+    
+    public function getCurrency()
+    {
+        return $this->hasOne(Currency::className(), ['id' => 'currency_id']);
     }
 
     /**
@@ -31,7 +39,9 @@ class Goods extends \yii\db\ActiveRecord
     {
         return [
             [['name', 'price'], 'required'],
-            [['name', 'price'], 'string', 'max' => 50]
+            [['price', 'currency_id'], 'number'],
+            [['name'], 'string', 'max' => 50],
+            [['price_str'], 'string', 'max' => 255]
         ];
     }
 
@@ -62,5 +72,28 @@ class Goods extends \yii\db\ActiveRecord
                 'pageSize' => 20,
             ],
         ]);
+    }
+    
+    public function getPriceToStr()
+    {
+        if ($this->price_str) {
+            return $this->price_str;
+        }
+        
+        $moneyModel = null;
+        if ($this->currency) {
+            $moneyClassName = 'app\module\admin\models\Money'. mb_strtoupper ($this->currency->cbr_charcode, 'UTF-8');
+            if (class_exists ($moneyClassName)) {
+                $moneyModel = new $moneyClassName();
+            }
+        }else {
+            $moneyModel = new MoneyRUR();
+        }
+        $sex = $moneyModel ? $moneyModel->getSex() : 0;
+        $one = $moneyModel ? $moneyModel->getOne() : ''; 
+        $four = $moneyModel ? $moneyModel->getFour() : '';
+        $many = $moneyModel ? $moneyModel->getMany() : '';
+  
+        return $this->getTextForm($this->price, $sex, $one, $four, $many);
     }
 }

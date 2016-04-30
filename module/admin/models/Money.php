@@ -5,10 +5,15 @@ use Yii;
 use yii\base\Model;
 class Money extends Model
 {
-    private $value;
-    private $nominal;
-    private $count;
-    private $rub_count;
+    protected $value;
+    protected $nominal;
+    protected $count;
+    protected $rub_count;
+    
+    protected $one = '';
+    protected $four = '';
+    protected $many = '';
+    protected $sex = 0;
 
     public function attributeNames()
     {}
@@ -45,4 +50,26 @@ class Money extends Model
         $this->count = $this->rub_count * $this->nominal /$this->value;
         return $this->count;
     }
+    
+    public function getOne()
+    {
+        return $this->one;
+    }
+    
+    public function getFour()
+    {
+        return $this->four;
+    }
+    
+    public function getMany()
+    {
+        return $this->many;
+    }
+    
+    public function getSex()
+    {
+        return $this->sex;
+    }
+
+
 }

@@ -13,14 +13,7 @@ echo DetailView::widget([
         'id',
         'name',
         'price',
-        [
-            'label' => 'currency_id',
-            'value' => $goods->currency ? $goods->currency->name : 'рубль' ,
-        ],
-        [
-            'label' => 'price_str',
-            'value' => $goods->getPriceToStr(),
-        ]
+        'currency_id',
     ],
 ]);
 

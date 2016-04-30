@@ -58,7 +58,7 @@ class CurrencyValues extends \yii\db\ActiveRecord
      */
     public function getCurrency()
     {
-        return $this->hasOne(YiiCurrency::className(), ['id' => 'currency_id']);
+        return $this->hasOne(Currency::className(), ['id' => 'currency_id']);
     }
     
     public function getCurrencyValue($currencyId, $date)

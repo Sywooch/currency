@@ -47,11 +47,11 @@ trait MoneyTrait {
         $a_power[0][2] = $four;
         $a_power[0][3] = $many;
         $digit = $this->getDigitArray();
-        $result = $this->transformToText($p_summa, $dg_power, $a_power, $digit);
+        $result = $this->transformToText($p_summa, $dg_power, $a_power, $digit, $many);
         return $result;
     }
     
-    private function transformToText($p_summa, $dg_power, $a_power, $digit)
+    private function transformToText($p_summa, $dg_power, $a_power, $digit, $many)
     {
         $mny = 0;
         $str="";
@@ -77,7 +77,6 @@ trait MoneyTrait {
             $str="";
             if($mny==0){
                 if($i>0) continue;
-                //$str .= $a_power[$i][1];
                 $str .= $many;
             }else{
                 if($mny>=100){

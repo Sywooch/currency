@@ -10,7 +10,7 @@ class m160428_095151_create_yii_goods extends Migration
             CREATE TABLE `yii_goods` (
                 `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `name` VARCHAR(50) NOT NULL COMMENT 'наименование',
-                `price` VARCHAR(50) NOT NULL COMMENT 'цена в рублях',
+                `price` DOUBLE(10,2) NOT NULL COMMENT 'цена',
                 PRIMARY KEY (`id`)
                 )
             COLLATE='utf8_general_ci'
