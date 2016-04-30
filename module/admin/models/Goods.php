@@ -1,6 +1,6 @@
 <?php
 
-namespace app\models;
+namespace app\module\admin\models;
 
 use Yii;
 
@@ -13,6 +13,7 @@ use Yii;
  *
  * @property YiiOrderGoods[] $yiiOrderGoods
  */
+use yii\data\ActiveDataProvider;
 class Goods extends \yii\db\ActiveRecord
 {
     /**
@@ -52,5 +53,14 @@ class Goods extends \yii\db\ActiveRecord
     public function getYiiOrderGoods()
     {
         return $this->hasMany(YiiOrderGoods::className(), ['goods_id' => 'id']);
+    }
+    public function getDataProvider()
+    {
+        return new ActiveDataProvider([
+            'query' => Goods::find(),
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+        ]);
     }
 }

@@ -2,26 +2,28 @@
 
 namespace app\module\admin\controllers;
 
+use app\module\admin\models\Goods;
 class GoodsController extends \yii\web\Controller
 {
-    public function actionCreate()
-    {
-        return $this->render('create');
-    }
-
-    public function actionDelete()
-    {
-        return $this->render('delete');
-    }
-
     public function actionIndex()
     {
-        return $this->render('index');
+        $model = new Goods();
+        $dataProvider = $model->getDataProvider();
+        return $this->render('index', array('dataProvider' => $dataProvider));
     }
-
-    public function actionUpdate()
+    
+    public function actionView($id)
     {
-        return $this->render('update');
+        $goods = $this->loadModel($id);
+        return $this->render('view', array('goods'=> $goods));
     }
-
+    
+    public function loadModel($id)
+    {
+        $model = Goods::find()->
+        where(['id'=>$id])->one();
+        if ($model === null)
+            throw new CHttpException (404, 'The requested page does not exist.');
+        return $model;
+    }
 }

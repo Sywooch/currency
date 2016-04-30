@@ -1,4 +1,6 @@
 <div class="admin-default-index">
+<?php use yii\helpers\Url;?>
+<a href="<?php echo Url::toRoute('default/index');?>">Список</a><br/>
 <?php 
 use yii\grid\GridView;
 echo "<h1>Список валют</h1>";

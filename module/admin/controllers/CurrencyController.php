@@ -29,5 +29,22 @@ class CurrencyController extends \yii\web\Controller
             throw new CHttpException (404, 'The requested page does not exist.');
         return $model;
     }
+    
+    public function actionGetValues() {
+    
+        $values = (new \yii\db\Query())
+        ->select(['currency_value', 'update'])
+        ->from(CurrencyValues::tableName())
+        ->where(['currency_id' => 34])
+        ->limit(10)
+        ->all();
+        $this->renderJSON($values);
+    }
+    
+    protected function renderJSON($data) {
+        header('Content-type: application/json');
+        echo json_encode($data);
+        die;
+    }
 
 }
