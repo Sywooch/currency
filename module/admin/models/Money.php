@@ -3,7 +3,7 @@ namespace app\module\admin\models;
 
 use Yii;
 use yii\base\Model;
-class AbstractCurrency extends Model
+class Money extends Model
 {
     private $value;
     private $nominal;

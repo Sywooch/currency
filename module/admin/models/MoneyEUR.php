@@ -2,8 +2,9 @@
 namespace app\module\admin\models;
 
 use Yii;
-class CurrencyUSD extends AbstractCurrency
+class MoneyEUR extends Money
 {
+
 
 }
 ?>
