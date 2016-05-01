@@ -74,26 +74,54 @@ class Goods extends \yii\db\ActiveRecord
         ]);
     }
     
+    /**
+     * Получить цену товара прописью
+     */
     public function getPriceToStr()
     {
-        if ($this->price_str) {
-            return $this->price_str;
-        }
-        
-        $moneyModel = null;
-        if ($this->currency) {
-            $moneyClassName = 'app\module\admin\models\Money'. mb_strtoupper ($this->currency->cbr_charcode, 'UTF-8');
-            if (class_exists ($moneyClassName)) {
-                $moneyModel = new $moneyClassName();
-            }
-        }else {
-            $moneyModel = new MoneyRUR();
-        }
+        $currencyCode = $this->currency ? $this->currency->cbr_charcode : '';
+        $moneyModel = Money::getMoneyModel($currencyCode);
         $sex = $moneyModel ? $moneyModel->getSex() : 0;
         $one = $moneyModel ? $moneyModel->getOne() : ''; 
         $four = $moneyModel ? $moneyModel->getFour() : '';
         $many = $moneyModel ? $moneyModel->getMany() : '';
   
         return $this->getTextForm($this->price, $sex, $one, $four, $many);
+    }
+    
+    /**
+     * Получить Цену товара в разных валютах
+     * @param array $curencyList
+     * @return array
+     */
+    public function getPriceInOtherCurrency(array $curencyList)
+    {
+        if (empty($curencyList)) {
+            return array();
+        }
+        if ($this->currency) {
+            if (isset($curencyList[$this->currency->id])) {
+                $nominal = $curencyList[$this->currency->id]['currency_nominal'];
+                $currencyValue = $curencyList[$this->currency->id]['currency_value'];
+            }else {
+                return array();
+            }
+        }else {
+            $nominal = 1;
+            $currencyValue = 1;
+        }
+        $modelFrom = Money::getMoneyModel($this->currency ? $this->currency->cbr_charcode : '');
+        $rubley = $modelFrom->convertToRubles($this->price, $nominal, $currencyValue);
+   
+        $result = array();
+        foreach ($curencyList as $currencyArr) {
+            $modelTo = Money::getMoneyModel($currencyArr['cbr_charcode']);
+            $item = array(
+                'cbr_code' => $currencyArr['cbr_charcode'], 
+                'value' => $modelTo->convertFromRubles($rubley, $currencyArr['currency_nominal'], $currencyArr['currency_value'])
+            );
+            $result[] = $item;
+        }
+        return $result;
     }
 }

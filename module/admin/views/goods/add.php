@@ -15,6 +15,24 @@
 
 <div class="form-group clearfix">
     <div class="col-sm-6">
+        <?php echo $form->field($goods,'name')->textInput(); ?>
+    </div>
+</div>
+
+<div class="form-group clearfix">
+    <div class="col-sm-6">
+        <?php echo $form->field($goods,'price')->textInput(); ?>
+    </div>
+</div>
+
+<div class="form-group clearfix">
+    <div class="col-sm-6">
+        <?php echo $form->field($goods, 'currency_id')->dropDownList($currencyList); ?>
+    </div>
+</div>
+
+<div class="form-group clearfix">
+    <div class="col-sm-6">
         <?php echo $form->field($goods,'price_str')->textInput()->hint('Цена прописью')->label('Цена прописью'); ?>
     </div>
 </div>

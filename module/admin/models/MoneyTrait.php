@@ -111,4 +111,9 @@ trait MoneyTrait {
         }
         return $result;
     }
+    
+    public function savePriceStr($model, $field, $value){
+        $model->$field = $value;
+        return $model->save(array($field));
+    }
 }

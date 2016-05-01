@@ -60,6 +60,11 @@ class Currency extends \yii\db\ActiveRecord
         return $this->hasMany(YiiCurrencyValues::className(), ['currency_id' => 'id']);
     }
     
+    /**
+     * Добавить валюту
+     * @param array $currencyArray
+     * @return \app\module\admin\models\Currency|boolean
+     */
     public function addCurrency(array $currencyArray)
     {
         $model = new Currency();
@@ -124,8 +129,32 @@ class Currency extends \yii\db\ActiveRecord
         'query' => Currency::find(),
         'pagination' => [
             'pageSize' => 20,
-        ],
-    ]);
+            ],
+        ]);
     }
 
+    /**
+     * получить последние значения курсов валют
+     */
+    static public function getLastCurrencyValues()
+    {
+        $subQuery = 'SELECT s1.currency_id, s1.currency_value, s1.currency_nominal, s1.update
+                        FROM   yii_currency_values s1
+                        WHERE  s1.update=(SELECT MAX(s2.update)
+                                            FROM yii_currency_values s2
+                                            WHERE s1.currency_id = s2.currency_id)';
+        $query = 'SELECT * FROM {{currency}} c
+                    LEFT JOIN  ({{subquery}}) v on c.id = v.currency_id
+            ';
+        $query = str_replace('{{currency}}', self::tableName(), $query);
+        $query = str_replace('{{subquery}}' , $subQuery, $query);
+        $list = Yii::$app->db
+        ->createCommand($query)
+        ->queryAll();
+        $result = array();
+        foreach ($list as $item) {
+            $result[$item['id']] = $item;
+        }
+        return $result;;
+    }
 }

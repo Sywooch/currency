@@ -5,11 +5,6 @@ use Yii;
 use yii\base\Model;
 class Money extends Model
 {
-    protected $value;
-    protected $nominal;
-    protected $count;
-    protected $rub_count;
-    
     protected $one = '';
     protected $four = '';
     protected $many = '';
@@ -17,58 +12,88 @@ class Money extends Model
 
     public function attributeNames()
     {}
-    
-    public function setValue($value)
-    {
-        $this->value = $value;
-    }
-    
-    public function setNominal($nominal)
-    {
-        $this->nominal = $nominal;
-    }
 
-    public function setCount($count)
+    /**
+     * Получить количество рублей
+     * @param double $nominal
+     * @param double $currencyValue
+     * @param double $total
+     * @return double
+     */
+    public function convertToRubles($total, $nominal, $currencyValue) 
     {
-        $this->count = $count;
-    }
-    
-    public function setRubCount($rub_count)
-    {
-        $this->rub_count = $rub_count;
-    }
-    
-    public function getRublesCount() {
-        if ($this->nominal == 0) {
+        if ($nominal == 0) {
             return 0;
         }
-        $this->rub_count = $this->value * $this->count/$this->nominal;
-        return $this->rub_count;;
+        return $currencyValue * $total/$nominal;
     }
     
-    public function  getCurrencyCount() {
-        $this->count = $this->rub_count * $this->nominal /$this->value;
-        return $this->count;
+    /**
+     * Конвертировать из рублей в текущую валюту
+     * @param double $rubley
+     * @param double $nominal
+     * @param double $currencyValue
+     * @return double
+     */
+    public function  convertFromRubles($rubley, $nominal, $currencyValue) 
+    {
+        return  $rubley * $nominal /$currencyValue;
     }
     
+    /**
+     * Наименование валюты прописью для количества 1
+     * @return string
+     */
     public function getOne()
     {
         return $this->one;
     }
     
+    /**
+     * Наименование валюты прописью для количества 2,3,4
+     * @return string
+     */
     public function getFour()
     {
         return $this->four;
     }
     
+    /**
+     * Наименование валюты прописью для количества больше 4
+     * @return string
+     */
     public function getMany()
     {
         return $this->many;
     }
     
+    /**
+     * 
+     * @return number
+     */
     public function getSex()
     {
         return $this->sex;
+    }
+    
+    /**
+     * Получить модель валюты
+     * @param string $currencyCode
+     * @return Money
+     */
+    
+    static public function getMoneyModel($currencyCode)
+    {
+        $currencyCode = $currencyCode ? trim($currencyCode) : 'RUR';
+        
+        $moneyClassName = 'app\module\admin\models\Money'. mb_strtoupper ($currencyCode, 'UTF-8');
+        $moneyModel = null;
+        if (class_exists ($moneyClassName)) {
+            $moneyModel = new $moneyClassName();
+        }else {
+            $moneyModel = new Money();
+        }
+        return $moneyModel;
     }
 
 
