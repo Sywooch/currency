@@ -4,6 +4,7 @@
     use yii\helpers\Html;
     use yii\widgets\ActiveForm;
     use yii\widgets\DetailView;
+    use yii\grid\GridView;
 ?>
 <a href="<?php echo Url::toRoute('default/index');?>">Список</a><br/>
 <a href="<?php echo Url::toRoute('currency/index');?>">Список валют</a><br/>
@@ -18,7 +19,7 @@ echo DetailView::widget([
         'name',
         'price',
         [
-            'label' => 'currency_id',
+            'label' => 'Валюта',
             'value' => $goods->currency ? $goods->currency->name : 'рубль' ,
         ],
         'price_str',
@@ -30,8 +31,33 @@ echo DetailView::widget([
 ]);
 
 ?>
-Цена в другой валюте:
+<h3>Цена в другой валюте</h3>
 <?php 
-    echo '<pre>';
-    print_r($priceInDiffCurrencies);
+
+    if($priceInDiffCurrencies) {
+        $provider = new \yii\data\ArrayDataProvider([
+            'allModels' => $priceInDiffCurrencies,
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+        ]);
+        echo GridView::widget([
+            'dataProvider' => $provider,
+            'columns' => [
+                ['class' => 'yii\grid\SerialColumn'],
+                [
+                    'label' => 'Код валюты',
+                    'value' => function ($data) {
+                        return $data['cbr_code'];
+                    }
+                ],
+                [
+                    'label' => 'Значение',
+                    'value' => function ($data) {
+                        return $data['value'];
+                    }
+                    ]
+                ],
+        ]); 
+    }
 ?>

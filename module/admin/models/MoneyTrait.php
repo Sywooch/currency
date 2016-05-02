@@ -1,11 +1,11 @@
 <?php
 namespace app\module\admin\models;
-trait MoneyTrait {
-    
+
+trait MoneyTrait
+{
+
     public function convert()
-    {
-        
-    }
+    {}
     
     private function getPowerArray()
     {
@@ -36,6 +36,15 @@ trait MoneyTrait {
         ];
     }
     
+    /**
+     * Получить число прописью
+     * @param integer $p_summa
+     * @param integer $sex (0 - жен, 1 - муж)
+     * @param string $one (наименование количества для 1)
+     * @param string $four (наименование количества для меньшеб либо равно 4)
+     * @param string $many (наименование количества для больше 4)
+     * @return string
+     */
     
     public function getTextForm($p_summa, $sex, $one, $four, $many)
     {
@@ -51,49 +60,61 @@ trait MoneyTrait {
         return $result;
     }
     
-    private function transformToText($p_summa, $dg_power, $a_power, $digit, $many)
+    /**
+     * Получить число прописью
+     * 
+     * @param integer $p_summa            
+     * @param integer $dg_power            
+     * @param array $a_power            
+     * @param array $digit            
+     * @param string $many            
+     * @return string
+     */
+    private function transformToText($p_summa, $dg_power, array $a_power, array $digit, $many)
     {
         $mny = 0;
-        $str="";
-        $result="";
+        $str = "";
+        $result = "";
         $divisor = 1;
-    
-        if($p_summa == 0) {
+        
+        if ($p_summa == 0) {
             return "ноль ";
         }
-    
-        if($p_summa < 0) {
-            $result="минус "; $p_summa = -$p_summa;
+        
+        if ($p_summa < 0) {
+            $result = "минус ";
+            $p_summa = - $p_summa;
         }
-    
-        for($i=0, $divisor=1; $i< $dg_power; $i++) {
+        
+        for ($i = 0, $divisor = 1; $i < $dg_power; $i ++) {
             $divisor *= 1000;
         }
-        for($i=$dg_power-1; $i>=0; $i--){
+        for ($i = $dg_power - 1; $i >= 0; $i --) {
             $divisor /= 1000;
-            $mny = (int)($p_summa / $divisor);
+            $mny = (int) ($p_summa / $divisor);
             $p_summa %= $divisor;
-    
-            $str="";
-            if($mny==0){
-                if($i>0) continue;
+            
+            $str = "";
+            if ($mny == 0) {
+                if ($i > 0)
+                    continue;
                 $str .= $many;
-            }else{
-                if($mny>=100){
-                    $str .= ' ' . $digit[$mny/100][3];
-                    $mny%=100;
+            } else {
+                if ($mny >= 100) {
+                    $str .= ' ' . $digit[$mny / 100][3];
+                    $mny %= 100;
                 }
-                if($mny>=20 ){
-                    $str .= ' ' . $digit[$mny/10 ][2];
-                    $mny%=10;
+                if ($mny >= 20) {
+                    $str .= ' ' . $digit[$mny / 10][2];
+                    $mny %= 10;
                 }
-                if($mny>=10 ) {
-                    $str .= ' ' . $digit[$mny-10 ][1];
-                }
-                else if ($mny>=1) {
-                    $str .= ' ' . $digit[$mny][0][$a_power[$i][0]];
-                }
-                switch($mny){
+                if ($mny >= 10) {
+                    $str .= ' ' . $digit[$mny - 10][1];
+                } else 
+                    if ($mny >= 1) {
+                        $str .= ' ' . $digit[$mny][0][$a_power[$i][0]];
+                    }
+                switch ($mny) {
                     case 1:
                         $str .= ' ' . $a_power[$i][1];
                         break;
@@ -105,15 +126,26 @@ trait MoneyTrait {
                     default:
                         $str .= ' ' . $a_power[$i][3];
                         break;
-                };
+                }
+                ;
             }
             $result .= $str;
         }
         return $result;
     }
-    
-    public function savePriceStr($model, $field, $value){
+
+    /**
+     * Сохрание числа прописью в модели
+     * 
+     * @param unknown $model            
+     * @param text $field            
+     * @param text $value            
+     */
+    public function savePriceStr($model, $field, $value)
+    {
         $model->$field = $value;
-        return $model->save(array($field));
+        return $model->save(array(
+            $field
+        ));
     }
 }

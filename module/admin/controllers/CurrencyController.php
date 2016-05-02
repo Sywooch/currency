@@ -27,7 +27,7 @@ class CurrencyController extends \yii\web\Controller
         $model = Currency::find()->
          where(['id'=>$id])->one();
         if ($model === null)
-            throw new CHttpException (404, 'The requested page does not exist.');
+            throw new \yii\web\NotFoundHttpException();
         return $model;
     }
 
@@ -45,10 +45,19 @@ class CurrencyController extends \yii\web\Controller
      */
     public function actionGraphic($id, $start, $end)
     {
+        if (empty($start)) {
+            $this->renderJSON(array());
+        }
+        if (empty($end)) {
+            $this->renderJSON(array());
+        }
         $datetimeStart = strtotime($start);
         $datetimeEnd = strtotime($end);
         $currency = $this->loadModel($id);
         $values = $currency->getHistoryForPeriod($datetimeStart, $datetimeEnd);
+        foreach ($values as &$item) {
+            $item['update'] = date('Y/m/d', $item['update']);
+        }
         $this->renderJSON($values);
     }
     
@@ -61,7 +70,10 @@ class CurrencyController extends \yii\web\Controller
     public function actionHistory($id, $page = 1, $countperpage = 10)
     {
         $currency = $this->loadModel($id);
-        $values = $currency->getHistory($page, $countperpage);
+        $values = $currency->getHistory((int)$page, (int)$countperpage);
+        foreach ($values as &$item) {
+            $item['update'] = date('Y/m/d', $item['update']);
+        }
         $total = $currency->getHistoryCount();
         $result = array('history' => $values, 'total' => $total);
         $this->renderJSON($result);

@@ -8,10 +8,7 @@
 <a href="<?php echo Url::toRoute('currency/index');?>">Список валют</a><br/>
 
 <?php $form = ActiveForm::begin(); ?>
-<?php echo $goods->name;?>
-<div>
-    <?php echo  "Cгенерированный вариант " . $goods->getPriceToStr(); ?>
-</div>
+<h1><?php echo $goods->name;?></h1>
 
 <div class="form-group clearfix">
     <div class="col-sm-6">
@@ -19,7 +16,7 @@
     </div>
 </div>
 
-<?php echo Html::submitButton('Submit', ['class'=> 'btn btn-primary']); ?>
+<?php echo Html::submitButton('Сохранить', ['class'=> 'btn btn-primary']); ?>
 <?php ActiveForm::end(); ?>
                 
 </div>

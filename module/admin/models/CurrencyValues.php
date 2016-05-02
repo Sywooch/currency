@@ -46,10 +46,10 @@ class CurrencyValues extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'currency_id' => 'Currency ID',
-            'currency_value' => 'Currency Value',
-            'currency_nominal' => 'Currency Nominal',
-            'update' => 'Update',
+            'currency_id' => 'Ид',
+            'currency_value' => 'Значение',
+            'currency_nominal' => 'Номинал',
+            'update' => 'Дата',
         ];
     }
 
@@ -68,6 +68,12 @@ class CurrencyValues extends \yii\db\ActiveRecord
         ->one();
     }
     
+    /**
+     * Добавить значение в курс валюты
+     * @param integer $currencyId
+     * @param array $currencyArray
+     * @return boolean
+     */
     public function addValue($currencyId, array $currencyArray)
     {
         $model = new CurrencyValues();
@@ -79,6 +85,12 @@ class CurrencyValues extends \yii\db\ActiveRecord
         return $model->save();
     }
     
+    /**
+     * Обновить значения для курса валюты
+     * @param integer $currencyId
+     * @param array $currencyArray
+     * @return boolean
+     */
     public function updateValue($currencyId, array $currencyArray)
     {
         $changeFlag = false;

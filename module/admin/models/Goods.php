@@ -1,5 +1,4 @@
 <?php
-
 namespace app\module\admin\models;
 
 use Yii;
@@ -16,9 +15,11 @@ use Yii;
  * @property YiiOrderGoods[] $yiiOrderGoods
  */
 use yii\data\ActiveDataProvider;
+
 class Goods extends \yii\db\ActiveRecord
 {
     use MoneyTrait;
+
     /**
      * @inheritdoc
      */
@@ -26,10 +27,12 @@ class Goods extends \yii\db\ActiveRecord
     {
         return 'yii_goods';
     }
-    
+
     public function getCurrency()
     {
-        return $this->hasOne(Currency::className(), ['id' => 'currency_id']);
+        return $this->hasOne(Currency::className(), [
+            'id' => 'currency_id'
+        ]);
     }
 
     /**
@@ -38,10 +41,34 @@ class Goods extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'price'], 'required'],
-            [['price', 'currency_id'], 'number'],
-            [['name'], 'string', 'max' => 50],
-            [['price_str'], 'string', 'max' => 255]
+            [
+                [
+                    'name',
+                    'price'
+                ],
+                'required'
+            ],
+            [
+                [
+                    'price',
+                    'currency_id'
+                ],
+                'number'
+            ],
+            [
+                [
+                    'name'
+                ],
+                'string',
+                'max' => 50
+            ],
+            [
+                [
+                    'price_str'
+                ],
+                'string',
+                'max' => 255
+            ]
         ];
     }
 
@@ -51,29 +78,35 @@ class Goods extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'name' => 'Name',
-            'price' => 'Price',
+            'id' => 'Ид',
+            'name' => 'Наименование',
+            'price' => 'Цена',
+            'price_str' => 'Цена прописью (пользователь)',
+            'currency_id' => 'Валюта'
         ];
     }
 
     /**
+     *
      * @return \yii\db\ActiveQuery
      */
     public function getYiiOrderGoods()
     {
-        return $this->hasMany(YiiOrderGoods::className(), ['goods_id' => 'id']);
+        return $this->hasMany(YiiOrderGoods::className(), [
+            'goods_id' => 'id'
+        ]);
     }
+
     public function getDataProvider()
     {
         return new ActiveDataProvider([
             'query' => Goods::find(),
             'pagination' => [
-                'pageSize' => 20,
-            ],
+                'pageSize' => 20
+            ]
         ]);
     }
-    
+
     /**
      * Получить цену товара прописью
      */
@@ -82,16 +115,17 @@ class Goods extends \yii\db\ActiveRecord
         $currencyCode = $this->currency ? $this->currency->cbr_charcode : '';
         $moneyModel = Money::getMoneyModel($currencyCode);
         $sex = $moneyModel ? $moneyModel->getSex() : 0;
-        $one = $moneyModel ? $moneyModel->getOne() : ''; 
+        $one = $moneyModel ? $moneyModel->getOne() : '';
         $four = $moneyModel ? $moneyModel->getFour() : '';
         $many = $moneyModel ? $moneyModel->getMany() : '';
-  
+        
         return $this->getTextForm($this->price, $sex, $one, $four, $many);
     }
-    
+
     /**
      * Получить Цену товара в разных валютах
-     * @param array $curencyList
+     * 
+     * @param array $curencyList            
      * @return array
      */
     public function getPriceInOtherCurrency(array $curencyList)
@@ -103,21 +137,21 @@ class Goods extends \yii\db\ActiveRecord
             if (isset($curencyList[$this->currency->id])) {
                 $nominal = $curencyList[$this->currency->id]['currency_nominal'];
                 $currencyValue = $curencyList[$this->currency->id]['currency_value'];
-            }else {
+            } else {
                 return array();
             }
-        }else {
+        } else {
             $nominal = 1;
             $currencyValue = 1;
         }
         $modelFrom = Money::getMoneyModel($this->currency ? $this->currency->cbr_charcode : '');
         $rubley = $modelFrom->convertToRubles($this->price, $nominal, $currencyValue);
-   
+        
         $result = array();
         foreach ($curencyList as $currencyArr) {
             $modelTo = Money::getMoneyModel($currencyArr['cbr_charcode']);
             $item = array(
-                'cbr_code' => $currencyArr['cbr_charcode'], 
+                'cbr_code' => $currencyArr['cbr_charcode'],
                 'value' => $modelTo->convertFromRubles($rubley, $currencyArr['currency_nominal'], $currencyArr['currency_value'])
             );
             $result[] = $item;

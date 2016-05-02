@@ -1,9 +1,12 @@
 <div class="admin-default-index">
-<?php use yii\helpers\Url;?>
+<?php 
+    use yii\helpers\Url;
+    use yii\grid\GridView;
+ ?>
 <a href="<?php echo Url::toRoute('default/index');?>">Главная</a><br/>
 <a href="<?php echo Url::toRoute('goods/add');?>">Добавить товар</a><br/>
 <?php 
-use yii\grid\GridView;
+
 echo "<h1>Список товаров</h1>";
 echo GridView::widget([
         'dataProvider' => $dataProvider,

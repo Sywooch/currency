@@ -3,6 +3,11 @@ namespace app\module\admin\models;
 
 use Yii;
 use yii\base\Model;
+/**
+ * Модель для импорта Xml файла
+ * @author Admin
+ *
+ */
 class AbstractStructure extends Model
 {
     protected $fileContent = '';
@@ -13,6 +18,9 @@ class AbstractStructure extends Model
         return array ();
     }
 
+    /**
+     * Загрузить Xml файл
+     */
     public function loadXML($fileName)
     {
         if (($this->fileContent = file_get_contents ($fileName))===false){
@@ -23,6 +31,12 @@ class AbstractStructure extends Model
         }
     }
 
+    /**
+     * Привести значение к типу
+     * @param string $value
+     * @param string $type
+     * @return string|boolean|number|unknown
+     */
     protected function toType($value, $type)
     {
         switch ($type) {
@@ -39,6 +53,12 @@ class AbstractStructure extends Model
         }
     }
 
+    /**
+     * Получить значения из xml узла
+     * @param array $struct
+     * @param array $fieldVars
+     * @return array
+     */
     protected function getValue($struct, $fieldVars)
     {
         if ('array' == $fieldVars[ 'type' ]) {

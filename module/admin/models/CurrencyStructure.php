@@ -2,6 +2,10 @@
 namespace app\module\admin\models;
 
 use Yii;
+
+/**
+ * Модель для импорта Xml файла с валютой
+ */
 class CurrencyStructure extends AbstractStructure
 {
     protected $defaultCurrencyFields = array (
@@ -28,6 +32,11 @@ class CurrencyStructure extends AbstractStructure
         
     );
 
+    /**
+     * Получить курс валют из загруженног xml файла
+     * @param array $fields
+     * @return array
+     */
     public function getCurrency($fields = array())
     {
         if (empty ($fields)) {

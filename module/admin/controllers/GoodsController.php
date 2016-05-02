@@ -29,7 +29,7 @@ class GoodsController extends \yii\web\Controller
         $model = Goods::find()->
         where([Goods::tableName() . '.id'=>$id])->joinWith('currency')->one();
         if ($model === null)
-            throw new CHttpException (404, 'The requested page does not exist.');
+            throw new \yii\web\NotFoundHttpException();
         return $model;
     }
     
