@@ -4,6 +4,7 @@ namespace app\module\admin\controllers;
 
 use app\module\admin\models\Currency;
 use app\module\admin\models\CurrencyValues;
+use app\module\admin\models\AbstractStructure;
 class CurrencyController extends \yii\web\Controller
 {
     public function actionIndex()
@@ -29,22 +30,40 @@ class CurrencyController extends \yii\web\Controller
             throw new CHttpException (404, 'The requested page does not exist.');
         return $model;
     }
-    
-    public function actionGetValues() {
-    
-        $values = (new \yii\db\Query())
-        ->select(['currency_value', 'update'])
-        ->from(CurrencyValues::tableName())
-        ->where(['currency_id' => 34])
-        ->limit(10)
-        ->all();
-        $this->renderJSON($values);
-    }
-    
+
     protected function renderJSON($data) {
         header('Content-type: application/json');
         echo json_encode($data);
         die;
     }
-
+    
+    /**
+     * Возращает историю валюты за период
+     * @param number $id
+     * @param number $start
+     * @param number $end
+     */
+    public function actionGraphic($id, $start, $end)
+    {
+        $datetimeStart = strtotime($start);
+        $datetimeEnd = strtotime($end);
+        $currency = $this->loadModel($id);
+        $values = $currency->getHistoryForPeriod($datetimeStart, $datetimeEnd);
+        $this->renderJSON($values);
+    }
+    
+    /**
+     * Возвращает историю валюты
+     * @param number $id
+     * @param number $page
+     * @param number $countperpage
+     */
+    public function actionHistory($id, $page = 1, $countperpage = 10)
+    {
+        $currency = $this->loadModel($id);
+        $values = $currency->getHistory($page, $countperpage);
+        $total = $currency->getHistoryCount();
+        $result = array('history' => $values, 'total' => $total);
+        $this->renderJSON($result);
+    }
 }

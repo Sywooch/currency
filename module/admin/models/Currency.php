@@ -157,4 +157,51 @@ class Currency extends \yii\db\ActiveRecord
         }
         return $result;;
     }
+    /**
+     * Возвращает историю курса валюты за период
+     * @param integer $id
+     * @param integer $datetimeStart
+     * @param integer $datetimeEnd
+     */
+    
+    public function getHistoryForPeriod($datetimeStart, $datetimeEnd)
+    {
+        return (new \yii\db\Query())
+        ->select(['c.currency_value', 'c.update', 'c.currency_id'])
+        ->from(CurrencyValues::tableName() . ' c')
+        ->where(['c.currency_id' => array($this->id)])
+        ->andWhere('c.update >= ' . $datetimeStart)
+        ->andWhere('c.update <= ' . $datetimeEnd)
+        ->orderBy('c.update ASC')
+        ->all();
+    }
+    
+    /**
+     * получить историю курса валюты по страницам
+     * @param number $page
+     * @param number $countperpage
+     */
+    public function getHistory($page = 1, $countperpage = 10)
+    {
+        return (new \yii\db\Query())
+        ->select(['c.currency_value', 'c.update', 'c.currency_id'])
+        ->from(CurrencyValues::tableName() . ' c')
+        ->where(['c.currency_id' => array($this->id)])
+        ->limit($countperpage)
+        ->offset($page)
+        ->orderBy('c.update ASC') 
+        ->all();
+    }
+    
+    /**
+     * получить количество записей в истории
+     */
+    public function getHistoryCount()
+    {
+        return  (new \yii\db\Query())
+        ->select(['c.currency_value', 'c.update', 'c.currency_id'])
+        ->from(CurrencyValues::tableName() . ' c')
+        ->where(['c.currency_id' => array($this->id)])
+        ->count();
+    }
 }

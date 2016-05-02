@@ -19,5 +19,7 @@ echo GridView::widget([
                 'template' => '{view}'
             ],
         ],
-    ]); ?>
+    ]);
+
+?>
 </div>
