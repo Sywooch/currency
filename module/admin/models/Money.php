@@ -14,9 +14,46 @@ class Money extends Model
     protected $many = '';
 
     protected $sex = 0;
+    
+    protected $sum = 0;
+    
+    //курс валюты
+    protected $value = 0;
+    
+    protected $nominal = 1;
 
     public function attributeNames()
     {}
+    
+    public function getSum()
+    {
+        return $this->sum;
+    }
+    
+    public function getValue()
+    {
+        return $this->value;
+    }
+    
+    public function getNominal()
+    {
+        return $this->nominal;
+    }
+    
+    public function setSum($sum)
+    {
+        $this->sum = $sum;
+    }
+    
+    public function setValue($value)
+    {
+        $this->value = $value;
+    }
+    
+    public function setNominal($nominal)
+    {
+        $this->nominal = $nominal;
+    }
 
     /**
      * Получить количество рублей
@@ -44,6 +81,9 @@ class Money extends Model
      */
     public function convertFromRubles($rubley, $nominal, $currencyValue)
     {
+        if ($currencyValue == 0) {
+            return 0;
+        }
         return $rubley * $nominal / $currencyValue;
     }
 

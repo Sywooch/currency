@@ -4,8 +4,18 @@ namespace app\module\admin\models;
 trait MoneyTrait
 {
 
-    public function convert()
-    {}
+    /**
+     * конвертация из одной валюты в другую
+     * @param Money $moneyFrom
+     * @param Money $moneyTo
+     * @return double
+     */
+    public function convert(Money $moneyFrom, Money $moneyTo )
+    {
+        $rubley = $moneyFrom->convertToRubles($moneyFrom->getSum(), $moneyFrom->getNominal(), $moneyFrom->getValue());
+        $result = $moneyTo->convertFromRubles($rubley, $moneyTo->getNominal(), $moneyTo->getValue());
+        return $result;
+    }
     
     private function getPowerArray()
     {

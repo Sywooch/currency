@@ -133,6 +133,8 @@ class Goods extends \yii\db\ActiveRecord
         if (empty($curencyList)) {
             return array();
         }
+        $nominal = 1;
+        $currencyValue = 1;
         if ($this->currency) {
             if (isset($curencyList[$this->currency->id])) {
                 $nominal = $curencyList[$this->currency->id]['currency_nominal'];
@@ -140,19 +142,21 @@ class Goods extends \yii\db\ActiveRecord
             } else {
                 return array();
             }
-        } else {
-            $nominal = 1;
-            $currencyValue = 1;
         }
         $modelFrom = Money::getMoneyModel($this->currency ? $this->currency->cbr_charcode : '');
-        $rubley = $modelFrom->convertToRubles($this->price, $nominal, $currencyValue);
-        
+        $modelFrom->setSum($this->price);
+        $modelFrom->setNominal($nominal);
+        $modelFrom->setValue($currencyValue);
+
         $result = array();
         foreach ($curencyList as $currencyArr) {
             $modelTo = Money::getMoneyModel($currencyArr['cbr_charcode']);
+            $modelTo->setNominal($currencyArr['currency_nominal']);
+            $modelTo->setValue($currencyArr['currency_value']);
+            
             $item = array(
                 'cbr_code' => $currencyArr['cbr_charcode'],
-                'value' => $modelTo->convertFromRubles($rubley, $currencyArr['currency_nominal'], $currencyArr['currency_value'])
+                'value' => $this->convert($modelFrom, $modelTo)
             );
             $result[] = $item;
         }
